@@ -95,6 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   FirebaseFirestore _firebaseFirestore= FirebaseFirestore.instance;
   FirebaseAuth auth= FirebaseAuth.instance;
   String studentName="";
+  String? userId;
   @override
   void initState() {
     super.initState();
@@ -104,7 +105,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     try {
       // Get the current user ID
       User? user = FirebaseAuth.instance.currentUser;
-      String? userId = user?.uid;
+       userId = user?.uid;
 
       if (userId != null) {
         // Fetch the student name from Firestore using the user ID
@@ -126,6 +127,72 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } catch (e) {
       print('Error fetching user data: $e');
     }
+  }
+
+  final TextEditingController _controller = TextEditingController();
+
+  void _showComplainDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                 // color: Colors.grey,
+                  child: Lottie.asset(
+                    'assets/ComplainPoll.json', // Replace with your image URL
+
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Complain Registration',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: _controller,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_controller.text.isNotEmpty) {
+                      // Save to Firebase
+                      await FirebaseFirestore.instance.collection('Complains').add({
+                        'studentid': userId, // Replace with actual student ID
+                        'complain': _controller.text,
+                        'Date': FieldValue.serverTimestamp(),
+                      });
+
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Complain submitted. Thanks for your valuable feedback!'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  },
+                  child: Text('Submit Report'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -308,21 +375,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               children: [
                                 Text("Register Your Complain", style: TextStyle(color: Colors.black, fontSize: 22),),
 
-                                Container(
-                                  //  color: Colors.red,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: Colors.deepPurple
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1),
+                                GestureDetector(
+                                  onTap: () {
 
-                                      child:  Center(child: Text("Register", style: TextStyle(color: Colors.white, fontSize: 16),)),
-
-
+                                    _showComplainDialog(context);
+                                  },
+                                  child: Container(
+                                    //  color: Colors.red,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.deepPurple
                                     ),
-                                  ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1),
+
+                                        child:  Center(child: Text("Register", style: TextStyle(color: Colors.white, fontSize: 16),)),
+
+
+                                      ),
+                                    ),
+                                ),
 
 
 

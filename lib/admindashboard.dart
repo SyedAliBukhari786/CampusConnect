@@ -12,6 +12,8 @@ import 'package:untitled/studentviewadmin.dart';
 import 'package:untitled/teachersregistration.dart';
 import 'EventManagement.dart';
 import 'adminalerts.dart';
+import 'adminbloodbankview.dart';
+import 'admincomplains.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -522,13 +524,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
              else  if(title=="Blood\nBank") {
                Navigator.push(
                    context,
-                   MaterialPageRoute(builder: (context) =>  Teachers()));
+                   MaterialPageRoute(builder: (context) =>  AdminBloodBank()));
 
              }
              else  if(title=="Complaint\nPoll") {
                Navigator.push(
                    context,
-                   MaterialPageRoute(builder: (context) =>  Teachers()));
+                   MaterialPageRoute(builder: (context) =>  AdminComplains()));
 
              }
 
